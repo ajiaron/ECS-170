@@ -270,7 +270,7 @@ input[type="number"] {
 		align-items: flex-end;
 		background-color: white;
 		background-size: cover;
-		border-radius: 1rem;
+		// border-radius: 1rem;
 		overflow: hidden;
 
 		transform: scale(1);
@@ -292,7 +292,7 @@ input[type="number"] {
 			hsl(0 0% 0% / 1)
 		);
 		transform: translateY(100%);
-		transition: all 0.5s ease;
+		transition: all 1s ease;
 	}
 
 	.about-card:hover{
@@ -301,7 +301,7 @@ input[type="number"] {
 	}
 
 	.about-card:hover .about-card-content{
-		transform: translateY(0%);
+		transform: translateY(1%);
 	}
 
 //styling inner texts
@@ -354,4 +354,22 @@ input[type="number"] {
 
 	.about-info{
 		grid-area: d;
+	}
+
+	.links{
+		position: absolute;
+		list-style-type: none;
+		display: flex;
+		gap: 2rem;
+	}
+
+	.links a{
+		color: white;
+		text-decoration: none;
+
+		transition: all 1s ease;
+	}
+
+	.links a:hover{
+		color: blue;
 	}
