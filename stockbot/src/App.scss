@@ -103,6 +103,7 @@ html {
 }
 .main-content-section {
   display: flex;
+  justify-content: center;
 }
 .main-content-results {
   display: flex;
@@ -230,3 +231,127 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+
+// styling for the about section
+
+	//styling for title text
+	div.title > p{
+		font-size: 2rem;
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		background-color: green;
+		height: 100%;
+		width: 100%;
+	}
+
+//styling for image stuff
+	.about-card:not(:nth-child(1)){
+		background-image: url("../esn.png");
+		background-repeat: no-repeat;
+		background-size: 300% 100%;
+	}
+	
+	.about-card:nth-child(2){
+		background-position-x: 0%;
+	}
+	
+	.about-card:nth-child(3){
+		background-position-x: 50%;
+	}
+	
+	.about-card:nth-child(4){
+		background-position-x: 100%;
+	}
+//styling for the about section cards
+	.about-card{
+		display: flex;
+		align-items: flex-end;
+		background-color: white;
+		background-size: cover;
+		border-radius: 1rem;
+		overflow: hidden;
+
+		transform: scale(1);
+
+		transition: all 1s ease;
+	}
+
+
+
+	.about-card-content{
+		display: flex;
+		align-items: flex-end;
+		padding: 1.5rem;
+		height: 100%;
+		width: 100%;
+		background: linear-gradient(
+			hsl(0 0% 0% / 0),
+			hsla(148 89% 47% / 0.3) 10%,
+			hsl(0 0% 0% / 1)
+		);
+		transform: translateY(100%);
+		transition: all 0.5s ease;
+	}
+
+	.about-card:hover{
+		transform: scale(1.1);
+		z-index: 10000;
+	}
+
+	.about-card:hover .about-card-content{
+		transform: translateY(0%);
+	}
+
+//styling inner texts
+	.about-grid p{
+		font-size: clamp(12px, 4.5vw, 20px);
+		font-family: "Inter";
+		letter-spacing: -.5px;
+		font-weight: 800;
+		color:#eee;
+		user-select: none;
+	}
+
+	.about-info li{
+		font-size: clamp(12px, 4.5vw, 20px);
+		font-family: "Inter";
+		letter-spacing: -.5px;
+		font-weight: 800;
+		color:#eee;
+		user-select: none;
+		list-style-type:square;
+	}
+
+//styling for the grid of aboutsection
+	.about-grid{
+		padding: 7rem 30rem 0 30rem;
+		display: grid;
+		grid-template-areas:
+			"l l l"
+			"a b c"
+			"d d d";
+		gap: 2rem 0;
+	}
+
+
+	div.title{
+		grid-area: l;
+	}
+
+	.about-card:nth-child(2){
+		grid-area: a;
+	}
+
+	.about-card:nth-child(3){
+		grid-area: b;
+	}
+
+	.about-card:nth-child(4){
+		grid-area: c;
+	}
+
+	.about-info{
+		grid-area: d;
+	}

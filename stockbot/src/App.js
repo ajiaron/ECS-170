@@ -287,6 +287,49 @@ export default function App() {
         </div>
     
         </section>
+
+		<section id="about">
+			<div class="about-grid">
+				<div class="title">
+					<p>About Echo State Networks(ESNs)</p>
+				</div>
+				<div class="about-card">
+					<div class="about-card-content">
+						<p>Inputs come in and they are connected randomly to the hidden layer (AKA the reservoir)
+						<hr/>
+							<p>key hypeparameter:</p>
+							<p>spectral radius - how much the value of the input weights effect the output</p>
+						</p>
+					</div>
+				</div>
+				<div class="about-card">
+					<div class="about-card-content">
+
+						<p>
+							The reservoir has its nodes randomly and sparsely connected. Which creates an embedding of many different transformations.
+							<hr/>
+							<p>Imagine selecting a bunch of features all at once. More neurons = more features to combine.</p>
+						</p>
+					</div>
+				</div>
+				<div class="about-card">
+					<div class="about-card-content">
+						<p>This output layer learns the embedding/combination of transformations through backpropagation between itself and the resevoir.</p>
+					</div>
+				</div>
+
+				<div class="about-info">
+					<ul>
+						<li>The idea behind ESNs is having a reservoir that gets learned only at the output layer</li>
+						<li>This leads faster learning time because no need for backpropagation through hidden layers</li>
+						<li>Hover the image for more details!</li>
+					</ul>
+				</div>
+
+			</div>
+			{/* <Testing/> */}
+		</section>
+
         <AnimatePresence>     
           {(shouldPopup && status.length > 0)&&  // gives request status
             <Notification status={status} onClose={()=>closePopup()}/>
