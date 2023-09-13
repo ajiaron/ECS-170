@@ -197,8 +197,9 @@ export default function Plot({modelData, stockData, inputData, type}) {
         {
             label: `${type==="Echo State"?"Free Running ESN":type}`,
             cubicInterpolationMode: 'default',
-            tension: (type==="Random Forest")?0:0.5,
-            data: (type==="Echo State")?Array.from({ length: 100 }, () => null).concat(modelData):modelData,
+            tension: (type==="Random Forest")?0.25:0.5,
+            data: (type==="Echo State")?Array.from({ length: 100 }, () => null).concat(modelData):
+            modelData,
             borderColor: (type==="Echo State")?'#45abd4':
             (type==="ARIMA")?"#c99946":
             (type==="Linear Regression")?'#4a9c69':
@@ -207,15 +208,16 @@ export default function Plot({modelData, stockData, inputData, type}) {
             (type==="ARIMA")?"#c99946":
             (type==="Linear Regression")?'#4a9c69':
             '#ba4363',
-            pointStyle:false,
+            pointStyle:(type==="Random Forest")?true:false,
+            pointBackgroundColor:"#ee4471",
             borderCapStyle:"round"
         },
         {
           label: `Target System`,
           data: stockData,
           cubicInterpolationMode: 'default',
-          tension: (type==="Random Forest")?0:0.5,
-          pointStyle:false,
+          tension: (type==="Random Forest")?0.25:0.5,
+          pointStyle:(type==="Random Forest")?true:false,
           borderColor: (type==="Echo State")?'#345e85':
           (type==="ARIMA")?"#7a5d2a":
           (type==="Linear Regression")?'#28553a':
@@ -224,6 +226,7 @@ export default function Plot({modelData, stockData, inputData, type}) {
           (type==="ARIMA")?"#c99946":
           (type==="Linear Regression")?'#4a9c69':
           '#6e283b',
+          pointBackgroundColor:"#97354f",
           borderCapStyle:"round"
         },
         ],

@@ -71,7 +71,7 @@ export default function App() {
         { stock_symbol:data.symbol, 
           start_date:data.startDate, 
           end_date:data.endDate, 
-          interval:data.intervals,
+          interval:"1d",
           split_percentage:".66"
         })
         if (res.data) {
@@ -94,7 +94,7 @@ export default function App() {
         { stock_symbol:data.symbol, 
           start_date:data.startDate, 
           end_date:data.endDate, 
-          interval:data.intervals,
+          interval:"1d",
           split_percentage:".66"
         })
         if (res.data) {
@@ -117,7 +117,7 @@ export default function App() {
         { stock_symbol:data.symbol, 
           start_date:data.startDate, 
           end_date:data.endDate, 
-          interval:data.intervals,
+          interval:"1d",
           split_percentage:".66"
         })
         if (res.data) {
@@ -132,11 +132,12 @@ export default function App() {
         setErrorMessage(`From run_arima: ${e.message}`)
     } 
   }
-  const runEcho = async(data) => {
+  const runEcho = async(data, sr) => {
     try {
         setStatus('loading')
         const res = await axios.post(`${connection}/run_echo`, 
-          { data:data.result
+          { data:data.result,
+            sr: sr
         })
         if (res.data) {
           console.log(res.data)
@@ -153,7 +154,8 @@ export default function App() {
     try {
       if (data&&data.result.length>=100) {
         const res = await axios.post(`${connection}/future_pred`, 
-          { data:data.result
+          { data:data.result,
+            sr: (data.sr && data.sr > 0)?data.sr:1.2
         })
         if (res.data) {
           console.log(res.data)
@@ -179,13 +181,13 @@ export default function App() {
       {symbol:data.symbol, 
        start_date:data.startDate, 
        end_date:data.endDate, 
-       intervals:data.intervals})
+       intervals:"1d"})
       if (res.data) {
         console.log(res.data)
         if (data.model ==="Echo State") {  // only echo needs to grab the stock data
           setStockData(res.data.result) 
         }
-        futurePred(res.data)  
+        futurePred(res.data, data.sr)  
         if (data.model === "ARIMA") { 
           runArima(data)
         }
@@ -196,7 +198,7 @@ export default function App() {
           runRandomForest(data)
         }
         else if (res.data.result.length >= 200 && data.model === "Echo State") {
-          runEcho(res.data)
+          runEcho(res.data, data.sr)
         } 
         else {
           setStatus('error')
@@ -212,7 +214,7 @@ export default function App() {
     }
   }
   const handleSubmit = (data) => {  // passed to inputForm
-      if (data.symbol && data.startDate && data.endDate && data.intervals && data.model) {
+      if (data.symbol && data.startDate && data.endDate && data.model) {
         console.log(data)
         console.log(connection)
         setInputData(data)  // for testing if needed

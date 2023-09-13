@@ -210,8 +210,10 @@ input:-webkit-autofill:focus {
     padding-left: 1.25em;
     color:#eee;
     outline:none;
+    transition: all .15s linear;
     align-self: center;
     border:none;
+    
     background-color: #252525;
     min-height:100%;
 }

@@ -119,6 +119,7 @@ export default function InputForm({ onHandleSubmit }) {
         startDate:'',
         endDate:'',
         intervals:'',
+        sr:'',
         model:'Echo State'
     })
     function handleDropdown() {
@@ -236,15 +237,18 @@ export default function InputForm({ onHandleSubmit }) {
                     <div className='input-container-bottom'>
                         <div className='input-interval-container'>
                             <p className='input-header-text-alt'>
-                            Interval
+                            Spectral Radius
                             </p>
                             <div className='input-wrapper'>
                                 <input className='input-content'
-                                    type='text'
-                                    name="intervals"
-                                    value={formData.intervals}
+                                    type='number'
+                                    name="sr"
+                                    style={{backgroundColor:(formData.model!=="Echo State")?"#202020":"#252525",
+                                    color:(formData.model!=="Echo State")?"#858585":"#eee"}}
+                                    disabled={formData.model!=="Echo State"}
+                                    value={(formData.model!=="Echo State")?1.2:formData.sr}
                                     onChange={(e)=>handleInputChange(e)}
-                                    placeholder='Enter a valid interval...'/>
+                                    placeholder='Enter a valid spectral radius...'/>
                             </div>
                         </div>
                         <motion.div className='input-model-container'>

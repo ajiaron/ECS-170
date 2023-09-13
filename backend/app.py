@@ -21,6 +21,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 app = FastAPI()
 
+class PredictionModel(BaseModel):
+    data: list[float]
 class GrabDataInput(BaseModel):
     symbol: str
     start_date: str
@@ -51,14 +53,15 @@ def MSE(prediction, actual):
 
 class DataModel(BaseModel):
     data: list[float]
+    sr:float
 
 @app.post("/run_echo")
 def run_echo_endpoint(data:DataModel):
     print(data)
-    mse, current_set = run_echo(data.data)
+    mse, current_set = run_echo(data.data, sr=data.sr)
     return {"mse": mse, "predictions": current_set.tolist()}
 
-def run_echo(data, reservoir_size=500, sr=1.2, n=0.005, window=5):
+def run_echo(data, sr, reservoir_size=500, n=0.005, window=5):
     esn = ESN(n_inputs = 1,
           n_outputs = 1,
           n_reservoir = reservoir_size,
@@ -90,8 +93,7 @@ def run_lr_endpoint(request: LRRequest):
 
 def run_linear_regression(stock_symbol, start_date, end_date, interval, split_percentage):
     series = yf.download(stock_symbol, start=start_date, end=end_date, interval=interval, progress=False)
-    series['Days'] = (series.index 
-    - series.index[0]).days
+    series['Days'] = (series.index - series.index[0]).days
     
     X = series[['Days']].values
     y = series['Adj Close'].values
