@@ -3,19 +3,19 @@ import { motion } from "framer-motion";
 import './Results.scss'
 import { LiaTimesSolid } from 'react-icons/lia'
 
-const ResultItem = ({day, price}) => {
+const ResultItem = ({day, price, type}) => {
     return (
         <div className={`${day===5?'results-last':'results-content'}`}>
             <div className='results-content-day'>
                 {day}
             </div>
             <div className='results-content-close'>
-                {`$${parseFloat(price).toFixed(2)}`}
+                {`${type==="Random Forest"?"":"$"}${parseFloat(type==="Random Forest"?price*100:price).toFixed(2)}${type==="Random Forest"?"%":""}`}
             </div>
         </div>
     )
 }
-export default function Results({data, input, error, onClose}) {
+export default function Results({data, input, error, type, onClose}) {
     return (
         <motion.div
             className="results-container"
@@ -53,7 +53,7 @@ export default function Results({data, input, error, onClose}) {
                 <div className='results-content-wrapper'>
                     {
                         data.map((item, index)=> (
-                            <ResultItem day={index+1} price={item}/>
+                            <ResultItem day={index+1} price={item} type={type}/>
                         ))
                     }
                 </div>

@@ -6,13 +6,72 @@ import Popup from './Popup.js'
 import { Oval } from 'react-loader-spinner'
 import { motion, AnimatePresence } from "framer-motion";
 import { BiPencil } from 'react-icons/bi'
-import { BsSearch,BsCalendarDate,BsFillCalendar2DateFill } from 'react-icons/bs'
+import { BsSearch,BsCalendarDate,BsFillCalendar2DateFill,BsCheckLg } from 'react-icons/bs'
 import { GoArrowRight } from 'react-icons/go'
 import { MdDateRange } from 'react-icons/md'
 import { LiaTimesSolid } from 'react-icons/lia'
 import { DateCalendar } from '@mui/x-date-pickers';
 import dayjs from 'dayjs'
 
+const Dropdown = ({ models, selected, onSelect, onToggle }) => {
+    const [model, setModel] = useState(selected)
+    const [isOpen, setIsOpen] = useState(false)
+    function handleSelect(e) {
+        setModel(e)
+        onSelect(e)
+    }
+    const container = {
+        hidden: { height: 0 },
+        show: {
+          height: "auto",
+          transition: {
+            staggerChildren: 0.25
+          }
+        }
+      }
+    return (
+        <motion.div
+            className='dropdown-list-container'
+            initial="hidden"
+            animate="show">
+            <motion.ul className='model-dropdown-list'
+            initial="hidden"
+            animate="show"
+            exit={{height:"0"}}
+            variants={container}
+            transition={{
+            type: "tween",
+            duration:.2
+            }}
+            >
+            {models.map((item, index)=> (
+                <motion.span className={`input-wrapper-dropdown-list-item ${item===model?"item-selected":''}`}
+                onClick={()=>handleSelect(item)}
+                variants={item}
+                initial={{opacity:'0'}}
+                animate={{opacity:"1"}}
+                exit={{x:30, opacity:'0',
+                transition:{duration:.15, delay:.15*(3-index)}}}
+                transition={{
+                type: "tween",
+                delay:index*0.1
+                }}>
+                    <motion.span className='input-content test'
+                    name="model" 
+                    style={{display:"flex", fontWeight:"500",alignItems:"center", backgroundColor:"transparent", fontSize:"clamp(10px, 3vw, 14px)", fontFamily:"Rubik"}}>
+                        {item}
+                        {(item===model)&&
+                        <BsCheckLg style={{color:"#fff",width:"1.125em", height:"1.125em",
+                        paddingLeft:".7em", paddingBottom:".025em"}}/>
+                        }
+                    </motion.span>
+                </motion.span>   
+                ))
+            }
+            </motion.ul>
+        </motion.div>
+    )
+}
 const DatePicker = ({ value, type, onSelect, onClose }) => {
     const [newDate, setNewDate] = useState(value.length>0?dayjs(value):dayjs())
     function handleChange(selected) {   
@@ -32,14 +91,26 @@ const DatePicker = ({ value, type, onSelect, onClose }) => {
         };
     }, []);
     return (
+        <motion.div
+        initial={{opacity:0}}
+        animate={{opacity:1}}
+        exit={{opacity:0}}
+        transition={{
+            type: "tween",
+            duration:.2
+        }}
+        >
         <DateCalendar value={value.length>0?dayjs(value):dayjs(newDate)} 
         onChange={(selected) => handleChange(selected)} showDaysOutsideCurrentMonth
         fixedWeekNumber={6} ref={modalRef}/>
+        </motion.div>
     )
 }
 export default function InputForm({ onHandleSubmit }) {
     const [openStart, setOpenStart] = useState(false)
     const [openEnd, setOpenEnd] = useState(false) 
+    const [toggleDropdown, setToggleDropdown] = useState(false)
+    const [models, setModels] = useState(["Echo State", "Linear Regression", "Random Forest", "ARIMA"])
     // ensures date is in form 'YYYY-MM-DD'
     const dateRegex = /^(?:19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
     // what actually gets submitted
@@ -47,8 +118,12 @@ export default function InputForm({ onHandleSubmit }) {
         symbol:'',
         startDate:'',
         endDate:'',
-        intervals:''
+        intervals:'',
+        model:'Echo State'
     })
+    function handleDropdown() {
+        setToggleDropdown(!toggleDropdown)
+    }
     function formatDate(date) {
         var year = date.getFullYear();
         var month = (1 + date.getMonth()).toString().padStart(2, '0');
@@ -60,6 +135,12 @@ export default function InputForm({ onHandleSubmit }) {
             ...prevData,
             [name]: dateRegex.test(date)?date:formatDate(new Date(date))
         }))
+    }
+    const handleModelChange = (value) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            ["model"]: value,
+        }));
     }
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -82,13 +163,21 @@ export default function InputForm({ onHandleSubmit }) {
     }
     // opens respective calenders
     useEffect(()=> {
+        if (toggleDropdown) {
+            setOpenEnd(false)
+            setOpenStart(false)
+        }
+    }, [toggleDropdown])
+    useEffect(()=> {
         if (openStart) {
             setOpenEnd(false)
+            setToggleDropdown(false)
         }
     }, [openStart])
     useEffect(()=> {
         if (openEnd) {
             setOpenStart(false)
+            setToggleDropdown(false)
         }
     }, [openEnd])
     return (
@@ -144,18 +233,31 @@ export default function InputForm({ onHandleSubmit }) {
                             </div>
                         </div>
                     </div>
-                    <div className='input-container'>
-                        <p className='input-header-text'>
-                        Interval
-                        </p>
-                        <div className='input-wrapper'>
-                            <input className='input-content'
-                                type='text'
-                                name="intervals"
-                                value={formData.intervals}
-                                onChange={(e)=>handleInputChange(e)}
-                                placeholder='Enter a valid interval...'/>
+                    <div className='input-container-bottom'>
+                        <div className='input-interval-container'>
+                            <p className='input-header-text-alt'>
+                            Interval
+                            </p>
+                            <div className='input-wrapper'>
+                                <input className='input-content'
+                                    type='text'
+                                    name="intervals"
+                                    value={formData.intervals}
+                                    onChange={(e)=>handleInputChange(e)}
+                                    placeholder='Enter a valid interval...'/>
+                            </div>
                         </div>
+                        <motion.div className='input-model-container'>
+                            <p className='input-header-text-alt'>
+                            Model
+                            </p>
+                            <motion.div className={'input-wrapper-dropdown-item'}>
+                                <span className='input-content' name="model" onClick={()=>handleDropdown()}
+                                style={{display:"flex", alignItems:"center", fontSize:"clamp(10px, 3vw, 14px)", fontFamily:"Rubik"}}>
+                                    {formData.model}
+                                </span>
+                            </motion.div>   
+                        </motion.div>
                     </div>
                     <span className='submit-button' 
                     role='button'
@@ -168,15 +270,22 @@ export default function InputForm({ onHandleSubmit }) {
                     </span>
                 </div>
             </div>
+            <AnimatePresence>
+                {(toggleDropdown && !openEnd && !openStart)&&
+                    <Dropdown models={models} selected={formData.model} 
+                    onSelect={(e)=>handleModelChange(e)}/>
+                }
+                </AnimatePresence>
             {
-                <div className={`${(openStart || openEnd)?'calender-container':'calender-container-alt'}`}>
-                    {
+                <div className={`${(openStart || openEnd)?'calender-container ':'calender-container-alt'}`}>
+                    
+                    <AnimatePresence>
                     <DatePicker 
                         value={(openStart)?formData.startDate:formData.endDate} 
                         type={(openStart)?'startDate':'endDate'}
                         onSelect={(name, selected)=>handleDateChange(name, selected)}
-                        onClose={()=>handleClose()}/>
-                    }
+                        onClose={()=>handleClose()}/>      
+                    </AnimatePresence>
                 </div>
             }
         </div>

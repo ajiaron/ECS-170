@@ -38,11 +38,78 @@ const RenderLegend = ({data}) => {
         </ul>
     )
 }
-export default function Plot({echoData, stockData, inputData}) {
-    const minValue = Math.min( Math.min(...echoData), Math.min(...stockData))
-    const maxValue = Math.max(Math.max(...stockData), Math.max(...echoData))
+export default function Plot({modelData, stockData, inputData, type}) {
+    const minValue = Math.min( Math.min(...modelData), Math.min(...stockData))
+    const maxValue = Math.max(Math.max(...stockData), Math.max(...modelData))
+
 
     const options = {
+        responsive: true,    
+        scales: {
+            x: {
+                title: {
+                    display: false,
+                    text: 'Number of days since start',
+                    padding:{
+                        top:4
+                    },
+             
+                },
+                type:'linear',
+                offset:true,
+                grid: { 
+                    display:false,
+                },
+                beginAtZero: true,
+                ticks: {
+                  align:'center',
+                  autoSkip: true,
+                  stepSize: Math.ceil(stockData.length / 8),
+                }
+            },
+            y: {
+                offset:true,
+                grid: { 
+                    color:'#262626',
+                },
+                ticks: {
+                    callback: (type==="Random Forest")?function(value, index, ticks) {
+                        return value
+                    }:
+                    function(value, index, ticks) {
+                        return '$' + value;
+                    }
+                },
+                type:'linear',
+                suggestedMin: minValue,
+                suggestedMax: maxValue,
+            },
+        },
+        layout: {
+            padding: {
+                left:32,
+                right:36,
+            }
+        },
+        plugins: {
+            
+          legend: {
+            position: 'top',
+            display:false
+          },
+          title: {
+            display: true,
+            padding: {
+                top:10,
+                bottom:12,
+            },
+            text: `Model Comparison - ${inputData.symbol.toUpperCase()} / ${inputData.startDate} / ${inputData.endDate} ${(type==="Random Forest"?"- Return Percentage":'')}`,
+          },
+         
+        },
+      };
+  
+    const echoOptions = {
         responsive: true,    
         scales: {
             x: {
@@ -62,6 +129,14 @@ export default function Plot({echoData, stockData, inputData}) {
                 offset:true,
                 grid: { 
                     color:'#262626',
+                },
+                ticks: {
+                    callback: (type==="Random Forest")?function(value, index, ticks) {
+                        return value
+                    }:
+                    function(value, index, ticks) {
+                        return '$' + value;
+                    }
                 },
                 type:'linear',
                 suggestedMin: minValue,
@@ -120,12 +195,18 @@ export default function Plot({echoData, stockData, inputData}) {
         updateMode:"resize",
         datasets: [
         {
-            label: `Free Running ESN`,
+            label: `${type==="Echo State"?"Free Running ESN":type}`,
             cubicInterpolationMode: 'default',
-            tension: 0.5,
-            data: Array.from({ length: 100 }, () => null).concat(echoData),
-            borderColor: '#45abd4',
-            backgroundColor: '#45abd4',
+            tension: (type==="Random Forest")?0:0.5,
+            data: (type==="Echo State")?Array.from({ length: 100 }, () => null).concat(modelData):modelData,
+            borderColor: (type==="Echo State")?'#45abd4':
+            (type==="ARIMA")?"#c99946":
+            (type==="Linear Regression")?'#4a9c69':
+            '#ba4363',
+            backgroundColor: (type==="Echo State")?'#45abd4':
+            (type==="ARIMA")?"#c99946":
+            (type==="Linear Regression")?'#4a9c69':
+            '#ba4363',
             pointStyle:false,
             borderCapStyle:"round"
         },
@@ -133,10 +214,16 @@ export default function Plot({echoData, stockData, inputData}) {
           label: `Target System`,
           data: stockData,
           cubicInterpolationMode: 'default',
-          tension: 0.5,
-          borderColor: '#345e85',
+          tension: (type==="Random Forest")?0:0.5,
           pointStyle:false,
-          backgroundColor: '#345e85',
+          borderColor: (type==="Echo State")?'#345e85':
+          (type==="ARIMA")?"#7a5d2a":
+          (type==="Linear Regression")?'#28553a':
+          '#6e283b',
+          backgroundColor: (type==="Echo State")?'#345e85':
+          (type==="ARIMA")?"#c99946":
+          (type==="Linear Regression")?'#4a9c69':
+          '#6e283b',
           borderCapStyle:"round"
         },
         ],
@@ -153,7 +240,7 @@ export default function Plot({echoData, stockData, inputData}) {
         damping: 20,
     }}>
         {<RenderLegend data={data}/>}
-        <Line data={data} options={options} />
+        <Line data={data} options={(type==="Echo State")?echoOptions:options} />
     </motion.div>
   )
 }

@@ -2,13 +2,23 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import os
+import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # silence tensorflow warnings
 import yfinance as yf
+from pmdarima import auto_arima
 from pyESN import ESN
 import matplotlib.pyplot as plt
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-
+from typing import List, Dict
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+from sklearn.model_selection import train_test_split 
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
 app = FastAPI()
 
 class GrabDataInput(BaseModel):
@@ -66,8 +76,147 @@ def run_echo(data, reservoir_size=500, sr=1.2, n=0.005, window=5):
     mse = MSE(current_set, np.array(data[trainlen:trainlen+100]))
     return (mse, current_set)
 
+class LRRequest(BaseModel):
+    stock_symbol: str
+    start_date: str
+    end_date: str
+    interval: str
+    split_percentage: float
+
+@app.post("/run_linear_regression")
+def run_lr_endpoint(request: LRRequest):
+    predictions, y_test, mse = run_linear_regression(request.stock_symbol, request.start_date, request.end_date, request.interval, request.split_percentage)
+    return {"predictions": predictions.tolist(), "expected":y_test.tolist(), "mse": mse}
+
+def run_linear_regression(stock_symbol, start_date, end_date, interval, split_percentage):
+    series = yf.download(stock_symbol, start=start_date, end=end_date, interval=interval, progress=False)
+    series['Days'] = (series.index 
+    - series.index[0]).days
+    
+    X = series[['Days']].values
+    y = series['Adj Close'].values
+
+    # Determine the split point between train and test data
+    split_index = int(len(X) * split_percentage)
+
+    X_train, X_test = X[:split_index], X[split_index:]
+    y_train, y_test = y[:split_index], y[split_index:]
+
+    # Create and fit the linear regression model
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    return y_pred, y_test, mse
+    
+class ARIMARequest:
+    stock_symbol: str
+    start_date: str
+    end_date: str
+    interval: str
+    split_percentage: float = 0.66
+
+@app.post("/run_arima")
+def run_arima_endpoint(request: ARIMARequest):
+    predictions, mse, expected_values = run_arima(request.stock_symbol, request.start_date, request.end_date, request.interval, request.split_percentage)
+    return {"predictions": predictions, "expected":expected_values, "mse":mse}
+
+def run_arima(stock_symbol, start_date, end_date, interval, split_percentage):
+    series = yf.download(stock_symbol, start=start_date, end=end_date, interval=interval, progress=False)
+    series.index = series.index.to_period('M')
+    expected_values=[]
+    # Split the data into train and test sets
+    X = series['Adj Close'].values
+    size = int(len(X) * split_percentage)
+    train, test = X[0:size], X[size:len(X)]
+    history = [x for x in train]
+    predictions = []
+
+    for t in range(len(test)):
+        model = ARIMA(history, order=(5, 1, 0))
+        
+        # Suppress ARIMA model output by redirecting stdout and stderr
+        with open(os.devnull, 'w') as devnull:
+            old_stdout, old_stderr = sys.stdout, sys.stderr
+            sys.stdout, sys.stderr = devnull, devnull
+            model_fit = model.fit()
+            sys.stdout, sys.stderr = old_stdout, old_stderr
+        
+        output = model_fit.forecast()
+        yhat = output[0]
+        predictions.append(yhat)
+        obs = test[t]
+        history.append(obs)
+        expected_values.append(obs)
+
+    mse = mean_squared_error(test, predictions)
+    return predictions, mse, expected_values
+
+
+class RFRequest(BaseModel):
+    stock_symbol: str
+    start_date: str
+    end_date: str
+    interval: str
+    split_percentage: float
+
+@app.post("/run_rf")
+def run_rf_endpoint(request: RFRequest):
+    predictions, actuals, mse_value, r2_value = run_rf(request.stock_symbol, request.start_date, request.end_date, request.interval, request.split_percentage)
+    return {
+        "predictions": predictions,
+        "actual_values": actuals,
+        "mse": mse_value,
+        "r2": r2_value
+    }
+
+def run_rf(stock_symbol: str, start_date: str, end_date: str, interval: str, split_percentage: float):
+    # Fetch stock data from Yahoo Finance
+    series = yf.download(stock_symbol, start=start_date, end=end_date, interval=interval, progress=False)
+
+    # Calculate moving averages and other features
+    series['SMA_50'] = series['Adj Close'].rolling(window=50).mean()
+    series['SMA_200'] = series['Adj Close'].rolling(window=200).mean()
+    series['Volume_Mean'] = series['Volume'].rolling(window=5).mean()
+    series['Daily_Return'] = series['Adj Close'].pct_change()
+
+    series = series.dropna(subset=['SMA_50', 'SMA_200', 'Volume_Mean', 'Daily_Return'])
+
+    # Create the target variable (next day's return)
+    series['Target'] = series['Daily_Return'].shift(-1)
+
+    # Impute missing values in the target variable using mean
+    series['Target'].fillna(series['Target'].mean(), inplace=True)
+
+    # Split the data into features (X) and target (y)
+    X = series[['SMA_50', 'SMA_200', 'Volume_Mean']].values
+    y = series['Target'].values
+
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    # Create and train the Random Forest Regressor
+    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    y_pred = rf_model.predict(X_test)
+
+    # Calculate evaluation metrics
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    print("Mean Squared Error:", mse)
+    print("R-squared:", r2)
+
+    return y_pred.tolist(), y_test.tolist(), mse, r2
+
+
 
 @app.post('/future_pred')
+
 def future_pred_endpoint(data: DataModel):
     result = future_pred(data.data)
     return {'result':result}

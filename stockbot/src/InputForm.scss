@@ -17,6 +17,7 @@ input:-webkit-autofill:focus {
     width: 100%;
     height: auto;
     display: flex;
+
   
 }
 .form-content {
@@ -27,8 +28,8 @@ input:-webkit-autofill:focus {
     flex-direction: column;
 }
 .fields-container {
-    min-width: 100%;
-    height:100%;
+    width: 91.65%;
+    min-height:100%;
     gap:1.25em;
     display: flex;
     flex-direction: column;
@@ -38,23 +39,41 @@ input:-webkit-autofill:focus {
     min-height:25%;
     display:flex;
     flex-direction: column;
+    justify-content: flex-start;
+}
+.input-container-bottom {
+    display: flex;
+    justify-content: flex-start;
+    gap:3%;
+    min-height: 25%;
+   // padding-left: .125em;
+    width: 95%;
+}
+.input-interval-container {
+    width: 48.5%;
+    display:flex;
+    flex-direction: column;
+}
+.input-model-container {
+    width: 48.5%;
+    display:flex;
+    flex-direction: column;
 }
 .input-date-container {
     display: flex;
     justify-content: flex-start;
-    gap:1.2em;
-   min-height: 25%;
-   padding-left: .125em;
-    width: 96.25%;
+    gap:3%;
+    min-height: 25%;
+
+    width: 95%;
 }
 .start-date-container {
-    width: 47.5%;
+    width: 48.5%;
     display:flex;
     flex-direction: column;
 }
 .end-date-container {
-    width: 47.5%;
-    min-height:25%;
+    width: 48.5%;
     display:flex;
     flex-direction: column;
 }
@@ -65,6 +84,7 @@ input:-webkit-autofill:focus {
     line-height: 30px;
     padding-bottom: .25em;
     letter-spacing: -.25px;
+    padding-left: .125em;
     font-weight: 600;
     color: #eee;
 }
@@ -73,7 +93,7 @@ input:-webkit-autofill:focus {
     font-family: "Rubik";
     margin-right: auto;
     line-height: 30px;
-    padding-left: .125em;
+   // padding-left: .125em;
     padding-bottom: .25em;
     letter-spacing: -.25px;
     font-weight: 600;
@@ -90,6 +110,99 @@ input:-webkit-autofill:focus {
     border-radius: 12px;
     background-color: #252525;
 }
+.model-dropdown-list {
+    min-width: 44.5%;
+    min-height:auto;
+    display: flex;
+    flex-direction: column;
+    padding-top: .125em;
+    padding-bottom: .125em;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 12px;
+    background-color: #252525;
+   // background-color: red;
+    background-color: transparent;
+    position: absolute;
+
+    z-index: 0;
+    gap:1.25em;
+    padding-left:0;
+    padding-right:0;
+   // right:0;
+    padding-top: 3.15em;
+    margin-right:1.5em;
+
+}
+.input-wrapper-dropdown-item {
+    width: 100%;
+    min-height:50%;
+    display: flex;
+    padding-top: .125em;
+    padding-bottom: .125em;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all .15s linear;
+    border-radius: 12px;
+    background-color: #252525;
+}
+.dropdown-list-container {
+    position: relative;
+   // margin-right: 1em;
+    min-width: 100%;
+}
+.item-selected {
+    filter: brightness(1.15);
+}
+.input-wrapper-dropdown-list-item {
+    width: 100%;
+    min-height:2.75em;
+    display: flex;
+    padding-top: .125em;
+    padding-bottom: .125em;
+    border-radius: 12px;
+    align-items: center;
+    padding-left: .125em;
+    justify-content: flex-start;
+    transition: all .15s linear;
+    background-color: #252525;
+    &:nth-of-type(1) {
+        background: linear-gradient(40deg, #252525 89%,#4a8e9cee 11%);
+    }
+
+    &:nth-of-type(2) {
+        background: linear-gradient(40deg, #252525 89%,#4a9c69ee 11%);
+    }
+    &:nth-of-type(3) {
+        background: linear-gradient(40deg, #252525 89%,#ba4363ee 11%);
+    }
+    &:nth-of-type(4) {
+        background: linear-gradient(40deg, #252525 89%,#c99946ee 11%);
+    }
+}
+.input-wrapper-dropdown-list-item:hover {
+    filter: brightness(1.2);
+}
+.wrapper-bottom {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+.dropdown-wrapper-top {
+    width: 100%;
+    min-height:50%;
+    display: flex;
+    padding-top: .125em;
+    padding-bottom: .125em;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all .15s linear;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    background-color: #252525;
+}
+.input-wrapper-dropdown-item:hover {
+    filter: brightness(1.15);
+}
 
 .input-content {
     width: 100%;
@@ -103,7 +216,7 @@ input:-webkit-autofill:focus {
     min-height:100%;
 }
 .input-content-alt {
-    width: 80.75%;
+    width: 77.5%;
     border-radius: 12px;
     padding-left: 1.25em;
     color:#eee;
@@ -127,7 +240,7 @@ input:-webkit-autofill:focus {
 }
 
 .submit-button {
-    width: 47.5%;
+    width: 46%;
     border-radius: 12px;
     margin-top:1em;
     margin-left: .125em;
@@ -184,6 +297,8 @@ input:-webkit-autofill:focus {
     height: fit-content;
     transition: all .15s linear;
     width: 1.125em;
+    margin-left: auto;
+    margin-right: 1em;
     height: 1.125em;
 }
 .calender-icon-wrapper:hover {
@@ -196,8 +311,8 @@ input:-webkit-autofill:focus {
 .calender-container {
     color:#eee;
     transform: translateY(1.125em);
-    background-color: #25252555;
-    outline: 1px solid #252525d5;
+    background-color: #181818;
+    outline: 1px solid #252525;
     border-radius: 1em;
     box-shadow: 2px 2px 0px 4px rgba(10,10,10,0.4);
     margin-left: 3.75em;
@@ -209,8 +324,8 @@ input:-webkit-autofill:focus {
     z-index: -1;
     opacity: 0;
     pointer-events: none;
-    background-color: #25252555;
-    outline: 1px solid #252525d5;
+    background-color: #181818;
+    outline: 1px solid #252525;
     transform: translateY(1.125em);
     border-radius: 1em;
     margin-left: 3.75em;

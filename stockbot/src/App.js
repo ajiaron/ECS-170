@@ -15,10 +15,12 @@ import { GoArrowRight } from 'react-icons/go'
 import { LiaTimesSolid } from 'react-icons/lia'
 
 export default function App() {
+  const ref = useRef(null)
+  const bottomRef = useRef(null)
   const [firstRender, setFirstRender] = useState(true)
   const [loading, setLoading] = useState(false)
   const [stockData, setStockData] = useState([])
-  const [echoData, setEchoData] = useState([])
+  const [modelData, setModelData] = useState([])
   const [predictionData, setPredictionData] = useState([])
   const [shouldPopup, setShouldPopup] = useState(false)
   const [status, setStatus] = useState("")
@@ -29,7 +31,8 @@ export default function App() {
     symbol:'',
     startDate:'',
     endDate:'',
-    intervals:''
+    intervals:'',
+    model:''
   })
   const [errorMessage, setErrorMessage] = useState(``)
   const connection = process.env.REACT_APP_API_URL
@@ -51,6 +54,7 @@ export default function App() {
     setShouldPopup(false)
     setStatus('')
   }
+  
   useEffect(()=>{   // dont let user scroll if an error popped up
     if (shouldNotify) {
         document.body.style.overflow='hidden'
@@ -59,6 +63,75 @@ export default function App() {
         document.body.style.overflow='auto'
     }
   }, [shouldNotify])
+  const runRandomForest = async(data) => {
+    try {
+        setStatus('loading')
+        console.log(data)
+        const res = await axios.post(`${connection}/run_rf`, 
+        { stock_symbol:data.symbol, 
+          start_date:data.startDate, 
+          end_date:data.endDate, 
+          interval:data.intervals,
+          split_percentage:".66"
+        })
+        if (res.data) {
+          console.log(res.data)
+          setMse(res.data.mse)
+          setStockData(res.data.actual_values)
+          setModelData(res.data.predictions)
+          setStatus('success')
+        }
+    } catch(e) {
+        setStatus('error')
+        setErrorMessage(`From run_arima: ${e.message}`)
+    } 
+  }
+  const runLinearRegression = async(data) => {
+    try {
+        setStatus('loading')
+        console.log(data)
+        const res = await axios.post(`${connection}/run_linear_regression`, 
+        { stock_symbol:data.symbol, 
+          start_date:data.startDate, 
+          end_date:data.endDate, 
+          interval:data.intervals,
+          split_percentage:".66"
+        })
+        if (res.data) {
+          console.log(res.data)
+          setMse(res.data.mse)
+          setStockData(res.data.expected)
+          setModelData(res.data.predictions)
+          setStatus('success')
+        }
+    } catch(e) {
+        setStatus('error')
+        setErrorMessage(`From run_arima: ${e.message}`)
+    } 
+  }
+  const runArima = async(data) => {
+    try {
+        setStatus('loading')
+        console.log(data)
+        const res = await axios.post(`${connection}/run_arima`, 
+        { stock_symbol:data.symbol, 
+          start_date:data.startDate, 
+          end_date:data.endDate, 
+          interval:data.intervals,
+          split_percentage:".66"
+        })
+        if (res.data) {
+          console.log(res.data)
+          setMse(res.data.mse)
+          setStockData(res.data.expected)
+          setModelData(res.data.predictions)
+          setStatus('success')
+        }
+    } catch(e) {
+        setStatus('error')
+        setErrorMessage(`From run_arima: ${e.message}`)
+    } 
+  }
   const runEcho = async(data) => {
     try {
         setStatus('loading')
@@ -68,7 +141,7 @@ export default function App() {
         if (res.data) {
           console.log(res.data)
           setMse(res.data.mse)
-          setEchoData(res.data.predictions[0])
+          setModelData(res.data.predictions[0])
           setStatus('success')
         }
     } catch(e) {
@@ -85,9 +158,9 @@ export default function App() {
         if (res.data) {
           console.log(res.data)
           setPredictionData(res.data.result)
-          if (data.result.length < 200) {
-            setStatus('success')
-          }
+        //  if (data.result.length < 200) {
+        //    setStatus('success')
+        //  }
         }
       }
       else {
@@ -109,11 +182,25 @@ export default function App() {
        intervals:data.intervals})
       if (res.data) {
         console.log(res.data)
-        setStockData(res.data) 
-        futurePred(res.data)
-        if (res.data.result.length >= 200) {
+        if (data.model ==="Echo State") {  // only echo needs to grab the stock data
+          setStockData(res.data.result) 
+        }
+        futurePred(res.data)  
+        if (data.model === "ARIMA") { 
+          runArima(data)
+        }
+        else if (data.model === "Linear Regression") {
+          runLinearRegression(data)
+        }
+        else if (data.model === "Random Forest") {
+          runRandomForest(data)
+        }
+        else if (res.data.result.length >= 200 && data.model === "Echo State") {
           runEcho(res.data)
         } 
+        else {
+          setStatus('error')
+        }
       }
     } catch(e) {
       setStatus('error')
@@ -125,7 +212,9 @@ export default function App() {
     }
   }
   const handleSubmit = (data) => {  // passed to inputForm
-      if (data.symbol && data.startDate && data.endDate && data.intervals) {
+      if (data.symbol && data.startDate && data.endDate && data.intervals && data.model) {
+        console.log(data)
+        console.log(connection)
         setInputData(data)  // for testing if needed
         grabData(data)
       } else {
@@ -141,6 +230,15 @@ export default function App() {
           setStatus('')
         }, 3000);
       }
+    }
+  }, [status])
+  useEffect(()=> {
+    if (status==='success') {
+      console.log(modelData.length, stockData.length)
+        // Smoothly scroll the container to its bottom
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     }
   }, [status])
   useEffect(()=> {  // for loading error popup 
@@ -160,7 +258,7 @@ export default function App() {
     }
   }, [shouldNotify])
   return (
-    <div className='main-content'>
+    <div className='main-content' ref={ref}>
       <div className={`main-content-container`}>
         {<AnimatePresence>
           { // gives error message
@@ -192,8 +290,8 @@ export default function App() {
             <Notification status={status} onClose={()=>closePopup()}/>
           }
         </AnimatePresence>
-        <section id="mid" className='main-content-results'>
-            <div className='header-container' style={{marginLeft: "8vw"}}>
+        <section id="mid" className='main-content-results' ref={bottomRef}>
+            <div className='header-container' style={{marginLeft: "8vw", marginTop:"5.65vw"}}>
               <span className='test-text-container' onClick={()=>handleTest()}>
                 <p className='header-text'>
                   Prediction Results
@@ -208,15 +306,16 @@ export default function App() {
            
           <div style={{minWidth:'100vw', display:"flex"}}>
             <AnimatePresence>
-              {(echoData && echoData.length > 0 && mse)&&
-                <Plot echoData={echoData} stockData={stockData.result.slice(0,200)} inputData={inputData}/>
+              {(modelData && modelData.length > 0 && mse && stockData)&&
+                <Plot modelData={modelData} stockData={(inputData.model==="Echo State")?
+                  stockData.slice(0,200):stockData} inputData={inputData} type={inputData.model}/>
               }
             </AnimatePresence>
             <div className='prediction-results-container-alt'>
               {(predictionData && predictionData.length>0 && mse)&&
               <AnimatePresence>
                 {(showResult)&&
-                  <Results data={predictionData} input={stockData.result} error={mse} onClose={()=>setShowResult(false)}/>
+                  <Results data={(inputData.model==="Echo State")?predictionData:stockData.slice(-5)} input={inputData.model==='Echo State'?stockData:stockData} error={mse} type={inputData.model} onClose={()=>setShowResult(false)}/>
                 }
               </AnimatePresence>
               }
