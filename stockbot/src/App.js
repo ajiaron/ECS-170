@@ -261,6 +261,7 @@ export default function App() {
   }, [shouldNotify])
   return (
     <div className='main-content' ref={ref}>
+           
       <div className={`main-content-container`}>
         {<AnimatePresence>
           { // gives error message
@@ -269,6 +270,7 @@ export default function App() {
           }
         </AnimatePresence>
         }
+
 
 		<section id="about">
 			<div class="about-grid">
@@ -312,7 +314,9 @@ export default function App() {
 			{/* <Testing/> */}
 		</section>
 
+
         <section id="top" className='main-content-section'> 
+
         <div className={` main-content-wrapper ${shouldNotify?'inactive-landing-container':(!firstRender)?'active-container':''}`}>
           <div className='main-content-left'>
             <div className='header-container '>
@@ -328,7 +332,7 @@ export default function App() {
             <InputForm onHandleSubmit={(formData)=>handleSubmit(formData)}/>
           </div>
         </div>
-    
+
         </section>
 
 		

@@ -171,7 +171,7 @@ html {
   color: #c0c0c0;
 }
 .header-blur {
-  background-image: linear-gradient(to bottom left,rgba(76, 10, 54, 0.4),#00000000);
+  background-image: linear-gradient(to bottom left,rgba(76, 10, 54, 0.2),#00000000);
   min-width: 40vw;
   filter:blur(80px);
   transform:  rotate(160deg);
@@ -188,7 +188,7 @@ html {
    -ms-user-select: none;
 }
 .footer-blur {
-  background-image: linear-gradient(to bottom left,#124a525e,#00000000);
+  background-image: linear-gradient(to bottom left,#0c3b435e,#00000000);
   min-width: 44vw; 
   filter:blur(100px);
   min-height: 15vw;
