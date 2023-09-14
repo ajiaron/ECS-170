@@ -106,7 +106,7 @@ const DatePicker = ({ value, type, onSelect, onClose }) => {
         </motion.div>
     )
 }
-export default function InputForm({ onHandleSubmit }) {
+export default function InputForm({ onHandleSubmit, onExpand }) {
     const [openStart, setOpenStart] = useState(false)
     const [openEnd, setOpenEnd] = useState(false) 
     const [toggleDropdown, setToggleDropdown] = useState(false)
@@ -162,7 +162,14 @@ export default function InputForm({ onHandleSubmit }) {
         setOpenStart(false)
         setOpenEnd(false)
     }
-    // opens respective calenders
+    // opens respective modals
+    useEffect(()=> {
+        if (toggleDropdown || openEnd || openStart) {
+            onExpand(true)
+        } else {
+            onExpand(false)
+        }
+    }, [toggleDropdown, openEnd, openStart])
     useEffect(()=> {
         if (toggleDropdown) {
             setOpenEnd(false)

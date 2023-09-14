@@ -111,7 +111,7 @@ input:-webkit-autofill:focus {
     background-color: #252525;
 }
 .model-dropdown-list {
-    min-width: 44.5%;
+    min-width: 45%;
     min-height:auto;
     display: flex;
     flex-direction: column;
@@ -129,9 +129,9 @@ input:-webkit-autofill:focus {
     gap:1.25em;
     padding-left:0;
     padding-right:0;
-   // right:0;
+   // left:-1.5em;
     padding-top: 3.15em;
-    margin-right:1.5em;
+    //margin-right:3em;
 
 }
 .input-wrapper-dropdown-item {
@@ -317,7 +317,7 @@ input:-webkit-autofill:focus {
     outline: 1px solid #252525;
     border-radius: 1em;
     box-shadow: 2px 2px 0px 4px rgba(10,10,10,0.4);
-    margin-left: 3.75em;
+    margin-left: 2.25em;
     height: 100%;
     transition: all .15s linear;
 
@@ -330,7 +330,7 @@ input:-webkit-autofill:focus {
     outline: 1px solid #252525;
     transform: translateY(1.125em);
     border-radius: 1em;
-    margin-left: 3.75em;
+    margin-left: 2.25em;
     height: 100%;
     transition: all .15s linear;
 }

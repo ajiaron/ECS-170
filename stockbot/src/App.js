@@ -26,6 +26,7 @@ export default function App() {
   const [status, setStatus] = useState("")
   const [shouldNotify, setShouldNotify] = useState(false)
   const [showResult, setShowResult] = useState(false)
+  const [shouldExpand, setShouldExpand] = useState(false)
   const [mse, setMse] = useState(null)
   const [inputData, setInputData] = useState({
     symbol:'',
@@ -272,6 +273,78 @@ export default function App() {
         }
 
 
+
+
+        <section id="top" className='main-content-section'> 
+
+        <motion.div
+           initial={{x:0}}
+           animate={{x:(shouldExpand)?"-30%":0}}
+           transition={{
+               type: "spring",
+               stiffness:160,
+               damping:40,
+               duration:.25
+           }}
+         className={` main-content-wrapper ${shouldNotify?'inactive-landing-container':(!firstRender)?'active-container':''}`}>
+          <div className='main-content-left'>
+            <div className='header-container '>
+              <span className='test-text-container'>
+                <p className='header-text'>
+                  Stock Price Prediction
+                </p>
+              </span>
+              <p className='header-subtext'>
+                Try our AI project with the stock {'&'} timeframe of your choice.
+              </p>
+            </div>
+            <InputForm onHandleSubmit={(formData)=>handleSubmit(formData)}
+            onExpand={(shouldExpand)=>setShouldExpand(shouldExpand)}/>
+          </div>
+        </motion.div>
+
+        </section>
+
+		
+
+        <AnimatePresence>     
+          {(shouldPopup && status.length > 0)&&  // gives request status
+            <Notification status={status} onClose={()=>closePopup()}/>
+          }
+        </AnimatePresence>
+        <section id="mid" className='main-content-results' ref={bottomRef}>
+            <div className='header-container' style={{marginLeft: "8vw", marginTop:"5.65vw"}}>
+              <span className='test-text-container' onClick={()=>handleTest()}>
+                <p className='header-text'>
+                  Prediction Results
+                </p>
+              </span>
+              {(inputData)&&
+                <p className='header-subtext'>
+                  {`Viewing data collected from ${formatDate(inputData.startDate)} - ${formatDate(inputData.endDate)}.`}
+                </p>
+              }
+            </div>
+           
+          <div style={{minWidth:'100vw', display:"flex"}}>
+            <AnimatePresence>
+              {(modelData && modelData.length > 0 && mse && stockData)&&
+                <Plot modelData={modelData} stockData={(inputData.model==="Echo State")?
+                  stockData.slice(0,200):stockData} inputData={inputData} type={inputData.model}/>
+              }
+            </AnimatePresence>
+            <div className='prediction-results-container-alt'>
+              {(predictionData && predictionData.length>0 && mse)&&
+              <AnimatePresence>
+                {(showResult)&&
+                  <Results data={(inputData.model==="Echo State")?predictionData:stockData.slice(-5)} input={inputData.model==='Echo State'?stockData:stockData} error={mse} type={inputData.model} onClose={()=>setShowResult(false)}/>
+                }
+              </AnimatePresence>
+              }
+            </div>
+          </div>
+        </section>
+
 		<section id="about">
 			<div class="about-grid">
 				<div class="title">
@@ -313,67 +386,6 @@ export default function App() {
 			</div>
 			{/* <Testing/> */}
 		</section>
-
-
-        <section id="top" className='main-content-section'> 
-
-        <div className={` main-content-wrapper ${shouldNotify?'inactive-landing-container':(!firstRender)?'active-container':''}`}>
-          <div className='main-content-left'>
-            <div className='header-container '>
-              <span className='test-text-container' onClick={()=>handleTest()}>
-                <p className='header-text'>
-                  Stock Price Prediction
-                </p>
-              </span>
-              <p className='header-subtext'>
-                Try our AI project with the stock {'&'} timeframe of your choice.
-              </p>
-            </div>
-            <InputForm onHandleSubmit={(formData)=>handleSubmit(formData)}/>
-          </div>
-        </div>
-
-        </section>
-
-		
-
-        <AnimatePresence>     
-          {(shouldPopup && status.length > 0)&&  // gives request status
-            <Notification status={status} onClose={()=>closePopup()}/>
-          }
-        </AnimatePresence>
-        <section id="mid" className='main-content-results' ref={bottomRef}>
-            <div className='header-container' style={{marginLeft: "8vw", marginTop:"5.65vw"}}>
-              <span className='test-text-container' onClick={()=>handleTest()}>
-                <p className='header-text'>
-                  Prediction Results
-                </p>
-              </span>
-              {(inputData)&&
-                <p className='header-subtext'>
-                  {`Viewing data collected from ${formatDate(inputData.startDate)} - ${formatDate(inputData.endDate)}.`} 
-                </p>
-              }
-            </div>
-           
-          <div style={{minWidth:'100vw', display:"flex"}}>
-            <AnimatePresence>
-              {(modelData && modelData.length > 0 && mse && stockData)&&
-                <Plot modelData={modelData} stockData={(inputData.model==="Echo State")?
-                  stockData.slice(0,200):stockData} inputData={inputData} type={inputData.model}/>
-              }
-            </AnimatePresence>
-            <div className='prediction-results-container-alt'>
-              {(predictionData && predictionData.length>0 && mse)&&
-              <AnimatePresence>
-                {(showResult)&&
-                  <Results data={(inputData.model==="Echo State")?predictionData:stockData.slice(-5)} input={inputData.model==='Echo State'?stockData:stockData} error={mse} type={inputData.model} onClose={()=>setShowResult(false)}/>
-                }
-              </AnimatePresence>
-              }
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   )
