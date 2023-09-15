@@ -271,10 +271,6 @@ export default function App() {
           }
         </AnimatePresence>
         }
-
-
-
-
         <section id="top" className='main-content-section'> 
 
         <motion.div
@@ -302,11 +298,7 @@ export default function App() {
             onExpand={(shouldExpand)=>setShouldExpand(shouldExpand)}/>
           </div>
         </motion.div>
-
         </section>
-
-		
-
         <AnimatePresence>     
           {(shouldPopup && status.length > 0)&&  // gives request status
             <Notification status={status} onClose={()=>closePopup()}/>
@@ -345,47 +337,60 @@ export default function App() {
           </div>
         </section>
 
-		<section id="about">
-			<div class="about-grid">
-				<div class="title">
-					<p>About Echo State Networks(ESNs)</p>
-				</div>
-				<div class="about-card">
-					<div class="about-card-content">
-						<p>Inputs come in and they are connected randomly to the hidden layer (AKA the reservoir).
-						<hr/>
-							<p>key hypeparameter:</p>
-							<p>spectral radius - how much the weights of prior neurons decay over time in the reservoir. The larger the spectral radius the less this decay occurs.</p>
-						</p>
-					</div>
-				</div>
-				<div class="about-card">
-					<div class="about-card-content">
 
-						<p>
-							The reservoir has its weights randomly connected and neurons sparsely connected. This creates a combination of transformations we call an embedding.
-							<hr/>
-							<p>Imagine combining a bunch of feature selecting all at once. More neurons = more features to combine.</p>
-						</p>
-					</div>
-				</div>
-				<div class="about-card">
-					<div class="about-card-content">
-						<p>This output layer is the only layer that learns the embedding through backpropagation between itself and the resevoir.</p>
-					</div>
-				</div>
-
-				<div class="about-info">
+		<section id="about" >
+      <div className='about-content-container'>
+      <div className='header-container 'style={{marginLeft: "8vw", marginTop:"5.65vw"}}>
+              <span className='test-text-container'>
+                <p className='header-text'>
+                 Echo State Networks
+                </p>
+              </span>
+              <p className='header-subtext'>
+                Understand how we leverege ESN's to make our predicitons.
+              </p>
+        </div>
+        <div className='about-figure-container'>
+         <div className='about-figure'/>
+        </div>
+        <div class="about-info">
 					<ul>
 						<li>The idea behind ESNs is having a reservoir that gets learned only at the output layer</li>
 						<li>This leads faster learning time because no need for backpropagation through hidden layers</li>
 						<li>Hover the image for more details!</li>
 					</ul>
-				</div>
-
-			</div>
+        </div>
 			{/* <Testing/> */}
+      </div>
 		</section>
+    <section style={{display:"flex", gap:"2em",flexDirection:"column", justifyContent:"center"}}>
+			<div class="about-grid">
+				<div class="about-card">
+					<div class="about-card-content">
+						<p>Inputs come in and they are connected randomly to the hidden layer (AKA the reservoir).
+						<hr/>
+							<p style={{alignSelf:"flex-start", fontWeight:"400", color:"#bbb", fontSize: 'clamp(12px, 4.5vw, 18px)'}}>key hypeparameter:<br></br>
+                spectral radius - how much the weights of prior neurons decay over time in the reservoir. The larger the spectral radius the less this decay occurs.</p>
+						</p>
+					</div>
+				</div>
+				<div class="about-card">
+					<div class="about-card-content">
+						<p>
+							The reservoir has its weights randomly connected and neurons sparsely connected. This creates a combination of transformations we call an embedding.
+							<hr/>
+							<p
+              style={{alignSelf:"flex-start",fontWeight:"400", color:"#bbb", fontSize: 'clamp(12px, 4.5vw, 18px)'}}>Imagine combining a bunch of feature selecting all at once. More neurons = more features to combine.</p>
+						</p>
+					</div>
+				</div>
+				<div class="about-card">
+					<div class="about-card-content" >
+						<p style={{alignSelf:"flex-start"}}>This output layer is the only layer that learns the embedding through backpropagation between itself and the resevoir.</p>
+					</div>
+				</div>
+			</div>  
+      </section>
       </div>
     </div>
   )

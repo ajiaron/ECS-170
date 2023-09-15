@@ -57,6 +57,12 @@ html {
         flex:1;
         z-index: 0;
       }
+      &:nth-of-type(3) {
+        min-width: 100%;
+        min-height: 100%;
+        flex:1;
+        z-index: 0;
+      }
     }
   }
 }
@@ -235,6 +241,8 @@ input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
 
+
+
 // styling for the about section
 
 	//styling for title text
@@ -243,58 +251,79 @@ input[type="number"] {
 		position: relative;
 		display: flex;
 		align-items: center;
-		justify-content: space-around;
-		background-color: green;
+	//	justify-content: space-around;
+	//	background-color: green;
 		height: 100%;
 		width: 100%;
 	}
 
-//styling for image stuff
+
 	.about-card:not(:nth-child(1)){
-		background-image: url("../esn.png");
+	//	background-image: url("../esn.png");
 		background-repeat: no-repeat;
 		background-size: 300% 100%;
 	}
-	
+
 	.about-card:nth-child(2){
 		background-position-x: 0%;
 	}
-	
+
 	.about-card:nth-child(3){
 		background-position-x: 50%;
 	}
-	
+
 	.about-card:nth-child(4){
 		background-position-x: 100%;
 	}
-//styling for the about section cards
+	
 	.about-card{
 		display: flex;
-		align-items: flex-end;
-		background-color: white;
+		//align-items: flex-end;
+	//	background-color: white;
 		background-size: cover;
 		// border-radius: 1rem;
-		overflow: hidden;
-
+	//	overflow: hidden;
+    width: 100%;
 		transform: scale(1);
 
-		transition: all 1s ease;
+		transition: all .5s ease;
 	}
 
-
-
+  .about-figure-container {
+    width: 40%;
+    height: 35%;
+    margin-left: 8%;
+    margin-top: 2.5%;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    outline: 1px solid #353535;
+  }
+  .about-figure {
+    background-image: url("../about.svg");
+		background-repeat: no-repeat;
+		background-size:cover;
+    aspect-ratio: 848/495;
+    width: 100%;
+    border-radius: 16px;
+    height: 100%;
+  }
 	.about-card-content{
 		display: flex;
-		align-items: flex-end;
-		padding: 1.5rem;
+		align-items: flex-start;
+		padding-left: 2rem;
+    padding-right: 2rem;
+   // border-top: 1px solid #eee;
+    padding-top: 2.5em;
+
 		height: 100%;
-		width: 100%;
-		background: linear-gradient(
-			hsl(0 0% 0% / 0),
-			hsla(148 89% 47% / 0.3) 10%,
-			hsl(0 0% 0% / 1)
-		);
-		transform: translateY(100%);
+		width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+
+		//transform: translateY(100%);
 		transition: all 1s ease;
 	}
 
@@ -304,7 +333,7 @@ input[type="number"] {
 	}
 
 	.about-card:hover .about-card-content{
-		transform: translateY(1%);
+		//transform: translateY(1%);
 	}
 
 //styling inner texts
@@ -312,7 +341,7 @@ input[type="number"] {
 		font-size: clamp(12px, 4.5vw, 20px);
 		font-family: "Inter";
 		letter-spacing: -.5px;
-		font-weight: 800;
+		font-weight: 600;
 		color:#eee;
 		user-select: none;
 	}
@@ -321,7 +350,7 @@ input[type="number"] {
 		font-size: clamp(12px, 4.5vw, 20px);
 		font-family: "Inter";
 		letter-spacing: -.5px;
-		font-weight: 800;
+		font-weight: 600;
 		color:#eee;
 		user-select: none;
 		list-style-type:square;
@@ -329,34 +358,29 @@ input[type="number"] {
 
 //styling for the grid of aboutsection
 	.about-grid{
-		padding: 7rem 30rem 0 30rem;
+	//	padding: 7rem 30rem 0 30rem;
 		display: grid;
 		grid-template-areas:
-			"l l l"
-			"a b c"
-			"d d d";
+			"a b c";
 		gap: 2rem 0;
 	}
 
-
-	div.title{
-		grid-area: l;
-	}
-
-	.about-card:nth-child(2){
+	.about-card:nth-child(1){
 		grid-area: a;
 	}
 
-	.about-card:nth-child(3){
+	.about-card:nth-child(2){
 		grid-area: b;
 	}
 
-	.about-card:nth-child(4){
+	.about-card:nth-child(3){
 		grid-area: c;
 	}
 
 	.about-info{
-		grid-area: d;
+    width: 75%;
+    margin-top: 2em;
+    padding-left: 6.5%;
 	}
 
 	.links{
@@ -376,3 +400,12 @@ input[type="number"] {
 	.links a:hover{
 		color: blue;
 	}
+
+
+  .about-content-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+  }
